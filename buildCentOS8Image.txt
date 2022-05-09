@@ -1,0 +1,77 @@
+
+root@paymentdocker4:/mnt>mkdir centos8-repo
+root@paymentdocker4:/mnt>mount /home/software/CentOS-8.2.2004-x86_64-dvd1.iso /mnt/centos8-repo/
+root@paymentdocker4:/mnt>cd /
+root@paymentdocker4:/>mkdir centos8-root
+root@paymentdocker4:/centos8-root>export rpm_root=/centos8-root
+root@paymentdocker4:/centos8-root>rpm --root ${rpm_root} --initdb
+root@paymentdocker4:/centos8-root>rpm --root ${rpm_root} -ivh /mnt/centos8-repo/BaseOS/Packages/centos-release-8.2-2.2004.0.1.el8.x86_64.rpm /mnt/centos8-repo/BaseOS/Packages/centos-gpg-keys-8.2-2.2004.0.1.el8.noarch.rpm /mnt/centos8-repo/BaseOS/Packages/centos-repos-8.2-2.2004.0.1.el8.x86_64.rpm
+warning: /mnt/centos8-repo/BaseOS/Packages/centos-release-8.2-2.2004.0.1.el8.x86_64.rpm: Header V3 RSA/SHA256 Signature, key ID 8483c65d: NOKEY
+Preparing...                          ################################# [100%]
+Updating / installing...
+   1:centos-gpg-keys-8.2-2.2004.0.1.el################################# [ 33%]
+   2:centos-repos-8.2-2.2004.0.1.el8  ################################# [ 67%]
+   3:centos-release-8.2-2.2004.0.1.el8################################# [100%]
+root@paymentdocker4:/centos8-root/etc>mv yum.repos.d yum.repos.d.ori
+root@paymentdocker4:/centos8-root/etc>mkdir yum.repos.d
+root@paymentdocker4:/centos8-root/etc/yum.repos.d>cat >${rpm_root}/etc/yum.repos.d/centos8.repo<<EOF
+> [centos8]
+> name=BaseOS
+> baseurl=file:///mnt/centos8-repo/BaseOS
+> enable=1
+> EOF
+root@paymentdocker4:/centos8-root>cat >${rpm_root}/public.gpg.key<<EOF
+> -----BEGIN PGP PUBLIC KEY BLOCK-----
+> Version: GnuPG v2.0.22 (GNU/Linux)
+>
+> mQINBFzMWxkBEADHrskpBgN9OphmhRkc7P/YrsAGSvvl7kfu+e9KAaU6f5MeAVyn
+> rIoM43syyGkgFyWgjZM8/rur7EMPY2yt+2q/1ZfLVCRn9856JqTIq0XRpDUe4nKQ
+> 8BlA7wDVZoSDxUZkSuTIyExbDf0cpw89Tcf62Mxmi8jh74vRlPy1PgjWL5494b3X
+> 5fxDidH4bqPZyxTBqPrUFuo+EfUVEqiGF94Ppq6ZUvrBGOVo1V1+Ifm9CGEK597c
+> aevcGc1RFlgxIgN84UpuDjPR9/zSndwJ7XsXYvZ6HXcKGagRKsfYDWGPkA5cOL/e
+> f+yObOnC43yPUvpggQ4KaNJ6+SMTZOKikM8yciyBwLqwrjo8FlJgkv8Vfag/2UR7
+> JINbyqHHoLUhQ2m6HXSwK4YjtwidF9EUkaBZWrrskYR3IRZLXlWqeOi/+ezYOW0m
+> vufrkcvsh+TKlVVnuwmEPjJ8mwUSpsLdfPJo1DHsd8FS03SCKPaXFdD7ePfEjiYk
+> nHpQaKE01aWVSLUiygn7F7rYemGqV9Vt7tBw5pz0vqSC72a5E3zFzIIuHx6aANry
+> Gat3aqU3qtBXOrA/dPkX9cWE+UR5wo/A2UdKJZLlGhM2WRJ3ltmGT48V9CeS6N9Y
+> m4CKdzvg7EWjlTlFrd/8WJ2KoqOE9leDPeXRPncubJfJ6LLIHyG09h9kKQARAQAB
+> tDpDZW50T1MgKENlbnRPUyBPZmZpY2lhbCBTaWduaW5nIEtleSkgPHNlY3VyaXR5
+> QGNlbnRvcy5vcmc+iQI3BBMBAgAhBQJczFsZAhsDBgsJCAcDAgYVCAIJCgsDFgIB
+> Ah4BAheAAAoJEAW1VbOEg8ZdjOsP/2ygSxH9jqffOU9SKyJDlraL2gIutqZ3B8pl
+> Gy/Qnb9QD1EJVb4ZxOEhcY2W9VJfIpnf3yBuAto7zvKe/G1nxH4Bt6WTJQCkUjcs
+> N3qPWsx1VslsAEz7bXGiHym6Ay4xF28bQ9XYIokIQXd0T2rD3/lNGxNtORZ2bKjD
+> vOzYzvh2idUIY1DgGWJ11gtHFIA9CvHcW+SMPEhkcKZJAO51ayFBqTSSpiorVwTq
+> a0cB+cgmCQOI4/MY+kIvzoexfG7xhkUqe0wxmph9RQQxlTbNQDCdaxSgwbF2T+gw
+> byaDvkS4xtR6Soj7BKjKAmcnf5fn4C5Or0KLUqMzBtDMbfQQihn62iZJN6ZZ/4dg
+> q4HTqyVpyuzMXsFpJ9L/FqH2DJ4exGGpBv00ba/Zauy7GsqOc5PnNBsYaHCply0X
+> 407DRx51t9YwYI/ttValuehq9+gRJpOTTKp6AjZn/a5Yt3h6jDgpNfM/EyLFIY9z
+> V6CXqQQ/8JRvaik/JsGCf+eeLZOw4koIjZGEAg04iuyNTjhx0e/QHEVcYAqNLhXG
+> rCTTbCn3NSUO9qxEXC+K/1m1kaXoCGA0UWlVGZ1JSifbbMx0yxq/brpEZPUYm+32
+> o8XfbocBWljFUJ+6aljTvZ3LQLKTSPW7TFO+GXycAOmCGhlXh2tlc6iTc41PACqy
+> yy+mHmSv
+> =kkH7
+> -----END PGP PUBLIC KEY BLOCK-----
+> EOF
+root@paymentdocker4:/centos8-root>rpm --root ${rpm_root} --import public.gpg.key
+root@paymentdocker4:/centos8-root>yum -y --installroot=${rpm_root} install yum
+root@paymentdocker4:/centos8-root/etc>mv yum.repos.d yum.repos.d.iso
+root@paymentdocker4:/centos8-root/etc>mv yum.repos.d.ori yum.repos.d
+root@paymentdocker4:/centos8-root>yum -y --installroot=${rpm_root} install vi ftp 
+root@paymentdocker4:/centos8-root/etc>yum --installroot=${rpm_root} update
+root@paymentdocker4:/centos8-root/etc/yum.repos.d>mv CentOS-AppStream.repo CentOS-AppStream.repo.ori
+root@paymentdocker4:/centos8-root/etc/yum.repos.d>yum -y --installroot=${rpm_root} install openssh-clients
+root@paymentdocker4:/centos8-root>chroot ${rpm_root} /bin/bash
+root@paymentdocker4:/centos8-root/etc/yum.repos.d>mv CentOS-AppStream.repo.ori CentOS-AppStream.repo
+root@paymentdocker4:/centos8-root/etc>rm -rf yum.repos.d.iso
+root@paymentdocker4:/>cat /etc/centos-release
+CentOS Linux release 8.2.2004 (Core)
+root@paymentdocker4:/>tar -C ${rpm_root}/ -c . | docker import - paymentdocker0.tw.ibm.com/centos8:8.2_20200804
+sha256:62af048d604a0517990b7597d0b7e511cfcdaba78562ea87baf850529922d5d1
+root@paymentdocker4:/>docker images
+REPOSITORY                                                         TAG                    IMAGE ID            CREATED             SIZE
+paymentdocker0.tw.ibm.com/centos8                                  8.2_20200804           62af048d604a        12 seconds ago      412MB
+
+
+Xvfb :99 &
+export DISPLAY=:99
+/home/software/ACE/ace^C1.0.0.7/tools/mqsicreatebar -h
