@@ -1,0 +1,45 @@
+[root@centos mnt]# mount -o loop /media/psf/shareVolume/CentOS-Stream-8-x86_64-20220513-dvd1.iso /mnt/centos8-repo
+mount: /mnt/centos8-repo: WARNING: device write-protected, mounted read-only.
+
+[root@centos /]# mkdir centos8-root
+[root@centos /]# export rpm_root=/centos8-root
+[root@centos /]# cd /centos8-root/
+[root@centos centos8-root]# rpm --root ${rpm_root} --initdb
+
+root@centos centos8-root]# rpm --root ${rpm_root} -ivh /mnt/centos8-repo/BaseOS/Packages/centos-stream-release-8.6-1.el8.noarch.rpm /mnt/centos8-repo/BaseOS/Packages/centos-stream-repos-8-6.el8.noarch.rpm /mnt/centos8-repo/BaseOS/Packages/centos-gpg-keys-8-6.el8.noarch.rpm
+root@centos etc]# cp -p -r yum.repos.d yum.repos.d.ori
+root@centos etc]# rm -f ${rpm_root}/etc/yum.repos.d/*.repo
+
+[root@centos yum.repos.d]# cat>${rpm_root}/etc/yum.repos.d/centos8.repo<<EOF
+[centos8]
+name=BaseOS
+baseurl=file:///mnt/centos8-repo/BaseOS
+enable=1
+EOF
+
+#Import GPG keys
+rpm --root ${rpm_root} --import  ${rpm_root}/etc/pki/rpm-gpg/RPM-GPG-KEY-*
+
+#Install minimalistic CentOS 8 packages
+yum -y --installroot=${rpm_root} install yum
+
+[root@centos yum.repos.d]# cat>${rpm_root}/etc/yum.repos.d/centos8_appsteam.repo<<EOF
+[centos8_appsteam]
+name=AppStream
+baseurl=file:///mnt/centos8-repo/AppStream
+enable=1
+EOF
+
+[root@centos yum.repos.d]# yum -y --installroot=${rpm_root} install java-1.8.0-openjdk
+
+chroot ${rpm_root} /bin/bash
+cat /etc/centos-release
+exit
+
+tar -C ${rpm_root}/ -c . | docker import - centos8_openjdk:20220513
+
+[root@centos centos8-root]# docker images
+REPOSITORY   TAG        IMAGE ID       CREATED         SIZE
+centos8_openjdk   20220513   26675bc8e30f   10 minutes ago   730MB
+
+[root@centos /]# docker save centos8_openjdk:20220513 > /media/psf/shareVolume/centos8_20220513.tar
