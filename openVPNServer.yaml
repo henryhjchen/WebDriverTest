@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: openvpnserver
+  labels:
+    app: openvpnserver
+  namespace: default
+spec:
+  type: NodePort
+  ports:
+  - port: 11194
+    nodePort: 31194
+    protocol: TCP
+    targetPort: 11194
+  selector:
+    app: openvpnserver 
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openvpnserver
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: openvpnserver
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: openvpnserver
+    spec:
+      containers:
+      - name: openvpnserver
+        image: paymentdocker0.tw.ibm.com/rhel68_openvpn:20191019_11194
+        ports:
+          - containerPort: 11194
+            protocol: TCP        
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+          readOnly: true
+      volumes:
+      - name: localtime
+        hostPath:
+          path: /etc/localtime
+          type: File
